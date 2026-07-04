@@ -6,6 +6,9 @@ Built as a Software Development Project (SDP) at **Bangladesh University of Busi
 
 ---
 
+
+> **🚧 Project Status:** Proposal approved. Development starting — currently on Increment 1 (Login System + File Structure). The folder structure below is the planned architecture; source code has not been added yet.
+
 ## 👥 Team — Three Knights
 
 | Student ID   | Name                | Role                          |
