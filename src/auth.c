@@ -29,3 +29,33 @@ void initializeAuthFile(void) {
 
     printf("Default admin account created.\n");
 }
+
+// add this to auth.c, below initializeAuthFile()
+
+int authenticateUser(const char *username, const char *password) {
+
+    FILE *fp = fopen(USERS_FILE, "rb");
+    if (fp == NULL) {
+        printf("Error: could not open users file.\n");
+        return 0;
+    }
+
+    User temp;
+
+    while (fread(&temp, sizeof(User), 1, fp) == 1) {
+        if (strcmp(temp.username, username) == 0 &&
+            strcmp(temp.password, password) == 0) {
+
+            fclose(fp);
+
+            if (temp.role == 'A') {
+                return 1;
+            } else {
+                return 2;
+            }
+        }
+    }
+
+    fclose(fp);
+    return 0;  /* no matching record found */
+}
