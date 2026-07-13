@@ -1,3 +1,4 @@
+#include "auth.h"
 #include <stdio.h>
 
 /* ---------- Function Prototypes ---------- */
@@ -7,7 +8,7 @@
 void displayWelcomeScreen();
 int  displayMainMenu();
 void loginMenu();
-
+initializeAuthFile();
 int main() {
 
     displayWelcomeScreen();
@@ -69,7 +70,22 @@ int displayMainMenu() {
 }
 
 void loginMenu() {
-    printf("\n[Login Module]\n");
-    printf("This feature is currently under development.\n");
-    printf("It will be implemented in the next phase of the project.\n");
+    char username[MAX_USERNAME];
+    char password[MAX_PASSWORD];
+
+    printf("\n[Login]\n");
+    printf("Username: ");
+    scanf("%s", username);
+    printf("Password: ");
+    scanf("%s", password);
+
+    int result = authenticateUser(username, password);
+
+    if (result == 1) {
+        printf("\nLogin successful. Welcome, Admin.\n");
+    } else if (result == 2) {
+        printf("\nLogin successful. Welcome, Staff.\n");
+    } else {
+        printf("\nLogin failed. Invalid username or password.\n");
+    }
 }
