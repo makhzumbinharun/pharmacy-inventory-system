@@ -15,7 +15,7 @@ void initializeAuthFile(void) {
     /* File doesn't exist yet - create it and write default admin */
     fp = fopen(USERS_FILE, "wb");
     if (fp == NULL) {
-        printf("Error: could not create users file.\n");
+        perror("fopen failed");
         return;
     }
 
