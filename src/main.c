@@ -1,4 +1,5 @@
 #include "auth.h"
+#include "medicine.h"
 #include <stdio.h>
 
 /* ---------- Function Prototypes ---------- */
@@ -83,8 +84,10 @@ void loginMenu() {
 
     if (result == 1) {
         printf("\nLogin successful. Welcome, Admin.\n");
+        medicineMenu();
     } else if (result == 2) {
         printf("\nLogin successful. Welcome, Staff.\n");
+        medicineMenu();
     } else {
         printf("\nLogin failed. Invalid username or password.\n");
     }
