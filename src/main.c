@@ -8,9 +8,9 @@
 void displayWelcomeScreen();
 int  displayMainMenu();
 void loginMenu();
-initializeAuthFile();
-int main() {
 
+int main() {
+    initializeAuthFile();
     displayWelcomeScreen();
 
     int choice;
