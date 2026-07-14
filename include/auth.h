@@ -10,9 +10,7 @@
 /* Default admin account created automatically on first run
    if users.dat does not exist yet:
        username: admin
-       password: admin123
-   (Team should change this password after first login in a
-   real deployment, but for this project it stays fixed.) */
+       password: admin123 */
 
 /* ---------- User Structure ---------- */
 typedef struct {
@@ -23,8 +21,7 @@ typedef struct {
 
 /* ---------- Public Function Prototypes ---------- */
 
-/* Makes sure users.dat exists. If it doesn't, creates it
-   and writes the default admin account into it. */
+/* Makes sure users.dat exists. If it doesn't, create it and write the default admin account into it. */
 void initializeAuthFile(void);
 
 /* Checks username/password against users.dat.
@@ -34,5 +31,14 @@ void initializeAuthFile(void);
      2 -> success, logged in as Staff
 */
 int authenticateUser(const char *username, const char *password);
+
+/* Tracks the role of the currently logged-in user.
+   Set by authenticateUser() on successful login.
+   'A' = Admin, 'S' = Staff, '\0' = no one logged in yet. */
+extern char currentUserRole;
+
+/* Checks a password against every Admin record in users.dat.
+   Used when the staff needs an Admin override to Add/Update/Delete. */
+int verifyAdminPassword(const char *password);
 
 #endif
