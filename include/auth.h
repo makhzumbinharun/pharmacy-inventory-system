@@ -35,4 +35,13 @@ void initializeAuthFile(void);
 */
 int authenticateUser(const char *username, const char *password);
 
+/* Tracks the role of the currently logged-in user.
+   Set by authenticateUser() on successful login.
+   'A' = Admin, 'S' = Staff, '\0' = no one logged in yet. */
+extern char currentUserRole;
+
+/* Checks a password against every Admin record in users.dat.
+   Used when Staff needs Admin override to Add/Update/Delete. */
+int verifyAdminPassword(const char *password);
+
 #endif
