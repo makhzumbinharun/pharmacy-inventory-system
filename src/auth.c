@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include <string.h>
 
+char currentUserRole = '\0';
+
 void initializeAuthFile(void) {
 
     FILE *fp = fopen(USERS_FILE, "rb");
@@ -30,8 +32,6 @@ void initializeAuthFile(void) {
     printf("Default admin account created.\n");
 }
 
-// add this to auth.c, below initializeAuthFile()
-
 int authenticateUser(const char *username, const char *password) {
 
     FILE *fp = fopen(USERS_FILE, "rb");
@@ -49,8 +49,10 @@ int authenticateUser(const char *username, const char *password) {
             fclose(fp);
 
             if (temp.role == 'A') {
+                currentUserRole = 'A';
                 return 1;
             } else {
+                currentUserRole = 'S';
                 return 2;
             }
         }
@@ -58,4 +60,24 @@ int authenticateUser(const char *username, const char *password) {
 
     fclose(fp);
     return 0;  /* no matching record found */
+}
+
+int verifyAdminPassword(const char *password) {
+
+    FILE *fp = fopen(USERS_FILE, "rb");
+    if (fp == NULL) {
+        return 0;
+    }
+
+    User temp;
+
+    while (fread(&temp, sizeof(User), 1, fp) == 1) {
+        if (temp.role == 'A' && strcmp(temp.password, password) == 0) {
+            fclose(fp);
+            return 1;
+        }
+    }
+
+    fclose(fp);
+    return 0;
 }
