@@ -169,7 +169,87 @@ void searchMedicine(void) {
 }
 
 void updateMedicine(void) {
-    printf("\n[Update Medicine] - Under development.\n");
+
+    if (currentUserRole == 'S') {
+        char adminPass[MAX_PASSWORD];
+        printf("\nStaff must enter Admin password to update medicine.\n");
+        printf("Admin password: ");
+        scanf("%s", adminPass);
+
+        if (!verifyAdminPassword(adminPass)) {
+            printf("Incorrect admin password. Update cancelled.\n");
+            return;
+        }
+    }
+
+    FILE *fp = fopen(MEDICINES_FILE, "r+b");
+    if (fp == NULL) {
+        printf("\nNo medicines found. Please add some first.\n");
+        return;
+    }
+
+    int searchId;
+    printf("\nEnter Medicine ID to update: ");
+    scanf("%d", &searchId);
+
+    Medicine m;
+    int found = 0;
+
+    while (fread(&m, sizeof(Medicine), 1, fp) == 1) {
+        if (m.id == searchId) {
+            found = 1;
+            break;
+        }
+    }
+
+    if (!found) {
+        printf("No medicine found with that ID.\n");
+        fclose(fp);
+        return;
+    }
+
+    printf("\nCurrent details:\n");
+    printf("Name: %s | Category: %s | Price: %.2f | Quantity: %d\n",
+           m.name, m.category, m.price, m.quantity);
+
+    int fieldChoice;
+    printf("\nWhat do you want to update?\n");
+    printf("1. Name\n");
+    printf("2. Category\n");
+    printf("3. Price\n");
+    printf("4. Quantity\n");
+    printf("Enter your choice: ");
+    scanf("%d", &fieldChoice);
+
+    switch (fieldChoice) {
+        case 1:
+            printf("New name: ");
+            scanf("%s", m.name);
+            break;
+        case 2:
+            printf("New category: ");
+            scanf("%s", m.category);
+            break;
+        case 3:
+            printf("New price: ");
+            scanf("%f", &m.price);
+            break;
+        case 4:
+            printf("New quantity: ");
+            scanf("%d", &m.quantity);
+            break;
+        default:
+            printf("Invalid choice. Update cancelled.\n");
+            fclose(fp);
+            return;
+    }
+
+    /* Step back to the start of this record before rewriting it */
+    fseek(fp, -(long)sizeof(Medicine), SEEK_CUR);
+    fwrite(&m, sizeof(Medicine), 1, fp);
+
+    fclose(fp);
+    printf("\nMedicine updated successfully.\n");
 }
 
 void deleteMedicine(void) {
