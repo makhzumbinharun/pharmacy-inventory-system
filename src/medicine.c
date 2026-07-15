@@ -76,7 +76,33 @@ void addMedicine(void) {
 }
 
 void viewAllMedicines(void) {
-    printf("\n[View All Medicines] - Under development.\n");
+
+    FILE *fp = fopen(MEDICINES_FILE, "rb");
+    if (fp == NULL) {
+        printf("\nNo medicines found. Please add some first.\n");
+        return;
+    }
+
+    Medicine m;
+    int count = 0;
+
+    printf("\n%-5s %-20s %-15s %-10s %-10s\n",
+           "ID", "Name", "Category", "Price", "Qty");
+    printf("----------------------------------------------------------\n");
+
+    while (fread(&m, sizeof(Medicine), 1, fp) == 1) {
+        printf("%-5d %-20s %-15s %-10.2f %-10d\n",
+               m.id, m.name, m.category, m.price, m.quantity);
+        count++;
+    }
+
+    fclose(fp);
+
+    if (count == 0) {
+        printf("No medicine records found.\n");
+    } else {
+        printf("\nTotal medicines: %d\n", count);
+    }
 }
 
 void searchMedicine(void) {
