@@ -253,5 +253,58 @@ void updateMedicine(void) {
 }
 
 void deleteMedicine(void) {
-    printf("\n[Delete Medicine] - Under development.\n");
+
+    if (currentUserRole == 'S') {
+        char adminPass[MAX_PASSWORD];
+        printf("\nStaff must enter Admin password to delete medicine.\n");
+        printf("Admin password: ");
+        scanf("%s", adminPass);
+
+        if (!verifyAdminPassword(adminPass)) {
+            printf("Incorrect admin password. Delete cancelled.\n");
+            return;
+        }
+    }
+
+    FILE *fp = fopen(MEDICINES_FILE, "rb");
+    if (fp == NULL) {
+        printf("\nNo medicines found. Please add some first.\n");
+        return;
+    }
+
+    FILE *tempFp = fopen("data/temp.dat", "wb");
+    if (tempFp == NULL) {
+        printf("Error: could not create temporary file.\n");
+        fclose(fp);
+        return;
+    }
+
+    int searchId;
+    printf("\nEnter Medicine ID to delete: ");
+    scanf("%d", &searchId);
+
+    Medicine m;
+    int found = 0;
+
+    while (fread(&m, sizeof(Medicine), 1, fp) == 1) {
+        if (m.id == searchId) {
+            found = 1;
+            continue;   /* skip writing this one - this is the delete */
+        }
+        fwrite(&m, sizeof(Medicine), 1, tempFp);
+    }
+
+    fclose(fp);
+    fclose(tempFp);
+
+    if (!found) {
+        printf("No medicine found with that ID.\n");
+        remove("data/temp.dat");   /* clean up, nothing was actually deleted */
+        return;
+    }
+
+    remove(MEDICINES_FILE);
+    rename("data/temp.dat", MEDICINES_FILE);
+
+    printf("\nMedicine deleted successfully.\n");
 }
