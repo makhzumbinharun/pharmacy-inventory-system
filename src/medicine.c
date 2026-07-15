@@ -76,17 +76,235 @@ void addMedicine(void) {
 }
 
 void viewAllMedicines(void) {
-    printf("\n[View All Medicines] - Under development.\n");
+
+    FILE *fp = fopen(MEDICINES_FILE, "rb");
+    if (fp == NULL) {
+        printf("\nNo medicines found. Please add some first.\n");
+        return;
+    }
+
+    Medicine m;
+    int count = 0;
+
+    printf("\n%-5s %-20s %-15s %-10s %-10s\n",
+           "ID", "Name", "Category", "Price", "Qty");
+    printf("----------------------------------------------------------\n");
+
+    while (fread(&m, sizeof(Medicine), 1, fp) == 1) {
+        printf("%-5d %-20s %-15s %-10.2f %-10d\n",
+               m.id, m.name, m.category, m.price, m.quantity);
+        count++;
+    }
+
+    fclose(fp);
+
+    if (count == 0) {
+        printf("No medicine records found.\n");
+    } else {
+        printf("\nTotal medicines: %d\n", count);
+    }
 }
 
 void searchMedicine(void) {
-    printf("\n[Search Medicine] - Under development.\n");
+
+    FILE *fp = fopen(MEDICINES_FILE, "rb");
+    if (fp == NULL) {
+        printf("\nNo medicines found. Please add some first.\n");
+        return;
+    }
+
+    int choice;
+    printf("\nSearch by:\n");
+    printf("1. Medicine ID\n");
+    printf("2. Medicine Name\n");
+    printf("Enter your choice: ");
+    scanf("%d", &choice);
+
+    Medicine m;
+    int found = 0;
+
+    printf("\n%-5s %-20s %-15s %-10s %-10s\n",
+           "ID", "Name", "Category", "Price", "Qty");
+    printf("----------------------------------------------------------\n");
+
+    if (choice == 1) {
+        int searchId;
+        printf("Enter Medicine ID: ");
+        scanf("%d", &searchId);
+
+        while (fread(&m, sizeof(Medicine), 1, fp) == 1) {
+            if (m.id == searchId) {
+                printf("%-5d %-20s %-15s %-10.2f %-10d\n",
+                       m.id, m.name, m.category, m.price, m.quantity);
+                found = 1;
+                break;   /* IDs are unique, no need to keep searching */
+            }
+        }
+
+    } else if (choice == 2) {
+        char searchName[MAX_NAME];
+        printf("Enter Medicine Name (or part of it): ");
+        scanf("%s", searchName);
+
+        while (fread(&m, sizeof(Medicine), 1, fp) == 1) {
+            if (strstr(m.name, searchName) != NULL) {
+                printf("%-5d %-20s %-15s %-10.2f %-10d\n",
+                       m.id, m.name, m.category, m.price, m.quantity);
+                found = 1;
+                /* no break - a name search may match multiple records */
+            }
+        }
+
+    } else {
+        printf("Invalid choice.\n");
+        fclose(fp);
+        return;
+    }
+
+    fclose(fp);
+
+    if (!found) {
+        printf("No matching medicine found.\n");
+    }
 }
 
 void updateMedicine(void) {
-    printf("\n[Update Medicine] - Under development.\n");
+
+    if (currentUserRole == 'S') {
+        char adminPass[MAX_PASSWORD];
+        printf("\nStaff must enter Admin password to update medicine.\n");
+        printf("Admin password: ");
+        scanf("%s", adminPass);
+
+        if (!verifyAdminPassword(adminPass)) {
+            printf("Incorrect admin password. Update cancelled.\n");
+            return;
+        }
+    }
+
+    FILE *fp = fopen(MEDICINES_FILE, "r+b");
+    if (fp == NULL) {
+        printf("\nNo medicines found. Please add some first.\n");
+        return;
+    }
+
+    int searchId;
+    printf("\nEnter Medicine ID to update: ");
+    scanf("%d", &searchId);
+
+    Medicine m;
+    int found = 0;
+
+    while (fread(&m, sizeof(Medicine), 1, fp) == 1) {
+        if (m.id == searchId) {
+            found = 1;
+            break;
+        }
+    }
+
+    if (!found) {
+        printf("No medicine found with that ID.\n");
+        fclose(fp);
+        return;
+    }
+
+    printf("\nCurrent details:\n");
+    printf("Name: %s | Category: %s | Price: %.2f | Quantity: %d\n",
+           m.name, m.category, m.price, m.quantity);
+
+    int fieldChoice;
+    printf("\nWhat do you want to update?\n");
+    printf("1. Name\n");
+    printf("2. Category\n");
+    printf("3. Price\n");
+    printf("4. Quantity\n");
+    printf("Enter your choice: ");
+    scanf("%d", &fieldChoice);
+
+    switch (fieldChoice) {
+        case 1:
+            printf("New name: ");
+            scanf("%s", m.name);
+            break;
+        case 2:
+            printf("New category: ");
+            scanf("%s", m.category);
+            break;
+        case 3:
+            printf("New price: ");
+            scanf("%f", &m.price);
+            break;
+        case 4:
+            printf("New quantity: ");
+            scanf("%d", &m.quantity);
+            break;
+        default:
+            printf("Invalid choice. Update cancelled.\n");
+            fclose(fp);
+            return;
+    }
+
+    /* Step back to the start of this record before rewriting it */
+    fseek(fp, -(long)sizeof(Medicine), SEEK_CUR);
+    fwrite(&m, sizeof(Medicine), 1, fp);
+
+    fclose(fp);
+    printf("\nMedicine updated successfully.\n");
 }
 
 void deleteMedicine(void) {
-    printf("\n[Delete Medicine] - Under development.\n");
+
+    if (currentUserRole == 'S') {
+        char adminPass[MAX_PASSWORD];
+        printf("\nStaff must enter Admin password to delete medicine.\n");
+        printf("Admin password: ");
+        scanf("%s", adminPass);
+
+        if (!verifyAdminPassword(adminPass)) {
+            printf("Incorrect admin password. Delete cancelled.\n");
+            return;
+        }
+    }
+
+    FILE *fp = fopen(MEDICINES_FILE, "rb");
+    if (fp == NULL) {
+        printf("\nNo medicines found. Please add some first.\n");
+        return;
+    }
+
+    FILE *tempFp = fopen("data/temp.dat", "wb");
+    if (tempFp == NULL) {
+        printf("Error: could not create temporary file.\n");
+        fclose(fp);
+        return;
+    }
+
+    int searchId;
+    printf("\nEnter Medicine ID to delete: ");
+    scanf("%d", &searchId);
+
+    Medicine m;
+    int found = 0;
+
+    while (fread(&m, sizeof(Medicine), 1, fp) == 1) {
+        if (m.id == searchId) {
+            found = 1;
+            continue;   /* skip writing this one - this is the delete */
+        }
+        fwrite(&m, sizeof(Medicine), 1, tempFp);
+    }
+
+    fclose(fp);
+    fclose(tempFp);
+
+    if (!found) {
+        printf("No medicine found with that ID.\n");
+        remove("data/temp.dat");   /* clean up, nothing was actually deleted */
+        return;
+    }
+
+    remove(MEDICINES_FILE);
+    rename("data/temp.dat", MEDICINES_FILE);
+
+    printf("\nMedicine deleted successfully.\n");
 }
