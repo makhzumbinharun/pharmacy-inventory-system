@@ -106,7 +106,66 @@ void viewAllMedicines(void) {
 }
 
 void searchMedicine(void) {
-    printf("\n[Search Medicine] - Under development.\n");
+
+    FILE *fp = fopen(MEDICINES_FILE, "rb");
+    if (fp == NULL) {
+        printf("\nNo medicines found. Please add some first.\n");
+        return;
+    }
+
+    int choice;
+    printf("\nSearch by:\n");
+    printf("1. Medicine ID\n");
+    printf("2. Medicine Name\n");
+    printf("Enter your choice: ");
+    scanf("%d", &choice);
+
+    Medicine m;
+    int found = 0;
+
+    printf("\n%-5s %-20s %-15s %-10s %-10s\n",
+           "ID", "Name", "Category", "Price", "Qty");
+    printf("----------------------------------------------------------\n");
+
+    if (choice == 1) {
+        int searchId;
+        printf("Enter Medicine ID: ");
+        scanf("%d", &searchId);
+
+        while (fread(&m, sizeof(Medicine), 1, fp) == 1) {
+            if (m.id == searchId) {
+                printf("%-5d %-20s %-15s %-10.2f %-10d\n",
+                       m.id, m.name, m.category, m.price, m.quantity);
+                found = 1;
+                break;   /* IDs are unique, no need to keep searching */
+            }
+        }
+
+    } else if (choice == 2) {
+        char searchName[MAX_NAME];
+        printf("Enter Medicine Name (or part of it): ");
+        scanf("%s", searchName);
+
+        while (fread(&m, sizeof(Medicine), 1, fp) == 1) {
+            if (strstr(m.name, searchName) != NULL) {
+                printf("%-5d %-20s %-15s %-10.2f %-10d\n",
+                       m.id, m.name, m.category, m.price, m.quantity);
+                found = 1;
+                /* no break - a name search may match multiple records */
+            }
+        }
+
+    } else {
+        printf("Invalid choice.\n");
+        fclose(fp);
+        return;
+    }
+
+    fclose(fp);
+
+    if (!found) {
+        printf("No matching medicine found.\n");
+    }
 }
 
 void updateMedicine(void) {
