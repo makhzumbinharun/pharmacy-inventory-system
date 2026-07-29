@@ -1,3 +1,4 @@
+#include "inventory.h"
 #include "medicine.h"
 #include "auth.h"
 #include <stdio.h>
@@ -14,7 +15,8 @@ void medicineMenu(void) {
         printf("3. Search Medicine\n");
         printf("4. Update Medicine\n");
         printf("5. Delete Medicine\n");
-        printf("6. Back to Main Menu\n");
+        printf("6. View Low Stock Medicines\n");
+        printf("7. Back to Main Menu\n");
         printf("------------------------------------\n");
         printf("Enter your choice: ");
 
@@ -29,7 +31,8 @@ void medicineMenu(void) {
             case 3: searchMedicine(); break;
             case 4: updateMedicine(); break;
             case 5: deleteMedicine(); break;
-            case 6: running = 0; break;
+            case 6: viewLowStockMedicines(); break;
+            case 7: running = 0; break;
             default: printf("\nInvalid choice. Please try again.\n");
         }
     }
