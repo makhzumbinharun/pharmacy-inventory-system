@@ -7,8 +7,7 @@
 
 #define USERS_FILE "data/users.dat"
 
-/* Default admin account created automatically on first run
-   if users.dat does not exist yet:
+/* Default admin account created automatically on first run if users.dat does not exist yet:
        username: admin
        password: admin123 */
 
@@ -40,5 +39,8 @@ extern char currentUserRole;
 /* Checks a password against every Admin record in users.dat.
    Used when the staff needs an Admin override to Add/Update/Delete. */
 int verifyAdminPassword(const char *password);
+
+/* Admin-only: creates a new user account (Admin or Staff) and appends it to users.dat. */
+void registerUser(void);
 
 #endif
