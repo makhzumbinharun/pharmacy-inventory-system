@@ -57,6 +57,21 @@ void addMedicine(void) {
     printf("\n--- Add New Medicine ---\n");
     printf("Medicine ID: ");
     scanf("%d", &m.id);
+
+    /* Check for duplicate ID before asking for anything else */
+    FILE *checkFp = fopen(MEDICINES_FILE, "rb");
+    if (checkFp != NULL) {
+        Medicine existing;
+        while (fread(&existing, sizeof(Medicine), 1, checkFp) == 1) {
+            if (existing.id == m.id) {
+                printf("Error: Medicine ID %d already exists. Add cancelled.\n", m.id);
+                fclose(checkFp);
+                return;
+            }
+        }
+        fclose(checkFp);
+    }
+
     printf("Name: ");
     scanf("%s", m.name);
     printf("Category: ");
