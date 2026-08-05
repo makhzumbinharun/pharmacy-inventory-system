@@ -22,8 +22,11 @@ void initializeAuthFile(void) {
     }
 
     User admin;
-    strcpy(admin.username, "admin");
-    strcpy(admin.password, "admin123");
+    printf("No admin account found. Let's create one.\n");
+    printf("Choose an admin username: ");
+    scanf("%s", admin.username);
+    printf("Choose an admin password: ");
+    scanf("%s", admin.password);
     admin.role = 'A';
 
     fwrite(&admin, sizeof(User), 1, fp);
@@ -80,4 +83,42 @@ int verifyAdminPassword(const char *password) {
 
     fclose(fp);
     return 0;
+}
+
+void registerUser(void) {
+
+    if (currentUserRole != 'A') {
+        printf("\nOnly Admin can create new user accounts.\n");
+        return;
+    }
+
+    User newUser;
+    char roleInput;
+
+    printf("\n--- Register New User ---\n");
+    printf("Username: ");
+    scanf("%s", newUser.username);
+    printf("Password: ");
+    scanf("%s", newUser.password);
+    printf("Role (A = Admin, S = Staff): ");
+    scanf(" %c", &roleInput);
+
+    if (roleInput != 'A' && roleInput != 'S') {
+        printf("Invalid role. User not created.\n");
+        return;
+    }
+
+    newUser.role = roleInput;
+
+    FILE *fp = fopen(USERS_FILE, "ab");
+    if (fp == NULL) {
+        printf("Error: could not open users file.\n");
+        return;
+    }
+
+    fwrite(&newUser, sizeof(User), 1, fp);
+    fclose(fp);
+
+    printf("User '%s' registered successfully as %s.\n",
+           newUser.username, roleInput == 'A' ? "Admin" : "Staff");
 }
