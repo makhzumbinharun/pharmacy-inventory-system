@@ -1,11 +1,11 @@
+#include "sales.h"
 #include "auth.h"
 #include "medicine.h"
 #include <stdio.h>
 
 /* ---------- Function Prototypes ---------- */
 /* main.c only needs to know these functions exist.
-   Their real implementation will move into separate
-   modules later (auth.c, medicine.c, etc.) */
+   Their real implementation will move into separate modules later (auth.c, medicine.c, etc.) */
 void displayWelcomeScreen();
 int  displayMainMenu();
 void loginMenu();
@@ -19,7 +19,7 @@ int main() {
 
     while (running) {
 
-        choice = displayMainMenu();
+        choice = displayMainMenu(); 
 
         switch (choice) {
             case 1:
@@ -61,8 +61,7 @@ int displayMainMenu() {
 
     if (scanf("%d", &choice) != 1) {
         /* User typed something that is not a number.
-           We must clear it out of the input buffer,
-           otherwise the program will loop forever. */
+           We must clear it out of the input buffer, otherwise the program will loop forever. */
         while (getchar() != '\n');
         return -1;
     }
@@ -82,13 +81,44 @@ void loginMenu() {
 
     int result = authenticateUser(username, password);
 
-    if (result == 1) {
-        printf("\nLogin successful. Welcome, Admin.\n");
-        medicineMenu();
-    } else if (result == 2) {
-        printf("\nLogin successful. Welcome, Staff.\n");
-        medicineMenu();
-    } else {
+    if (result == 1 || result == 2) {
+    printf("\nLogin successful. Welcome, %s.\n", result == 1 ? "Admin" : "Staff");
+
+    int hubChoice;
+    int hubRunning = 1;
+
+    while (hubRunning) {
+        printf("\n----------- MAIN MENU -----------\n");
+        printf("1. Medicine Management\n");
+        printf("2. Sales Management\n");
+        if (currentUserRole == 'A') {
+            printf("3. Register New User\n");
+        }
+        printf("4. Logout\n");
+        printf("----------------------------------\n");
+        printf("Enter your choice: ");
+
+        if (scanf("%d", &hubChoice) != 1) {
+            while (getchar() != '\n');
+            hubChoice = -1;
+        }
+
+        switch (hubChoice) {
+            case 1: medicineMenu(); break;
+            case 2: salesMenu(); break;
+            case 3:
+                if (currentUserRole == 'A') {
+                    registerUser();
+                } else {
+                    printf("\nInvalid choice. Please try again.\n");
+                }
+                break;
+            case 4: hubRunning = 0; break;
+            default: printf("\nInvalid choice. Please try again.\n");
+        }
+    }
+
+} else {
         printf("\nLogin failed. Invalid username or password.\n");
     }
 }
