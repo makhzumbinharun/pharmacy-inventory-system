@@ -7,9 +7,7 @@
 
 #define USERS_FILE "data/users.dat"
 
-/* Default admin account created automatically on first run if users.dat does not exist yet:
-       username: admin
-       password: admin123 */
+/* If users.dat does not exist yet, initializeAuthFile() prompts the user to interactively create the first Admin account. */
 
 /* ---------- User Structure ---------- */
 typedef struct {
@@ -20,7 +18,7 @@ typedef struct {
 
 /* ---------- Public Function Prototypes ---------- */
 
-/* Makes sure users.dat exists. If it doesn't, create it and write the default admin account into it. */
+/* Makes sure users.dat exists. If it doesn't, create it and write the created admin account into it. */
 void initializeAuthFile(void);
 
 /* Checks username/password against users.dat.
@@ -35,6 +33,7 @@ int authenticateUser(const char *username, const char *password);
    Set by authenticateUser() on successful login.
    'A' = Admin, 'S' = Staff, '\0' = no one logged in yet. */
 extern char currentUserRole;
+extern char currentUsername[MAX_USERNAME];
 
 /* Checks a password against every Admin record in users.dat.
    Used when the staff needs an Admin override to Add/Update/Delete. */

@@ -3,6 +3,7 @@
 #include <string.h>
 
 char currentUserRole = '\0';
+char currentUsername[MAX_USERNAME] = "";
 
 void initializeAuthFile(void) {
 
@@ -51,6 +52,8 @@ int authenticateUser(const char *username, const char *password) {
 
             fclose(fp);
 
+            strcpy(currentUsername, temp.username);
+            
             if (temp.role == 'A') {
                 currentUserRole = 'A';
                 return 1;
@@ -98,6 +101,21 @@ void registerUser(void) {
     printf("\n--- Register New User ---\n");
     printf("Username: ");
     scanf("%s", newUser.username);
+
+    /* Check for duplicate username before proceeding */
+    FILE *checkFp = fopen(USERS_FILE, "rb");
+    if (checkFp != NULL) {
+        User existing;
+        while (fread(&existing, sizeof(User), 1, checkFp) == 1) {
+            if (strcmp(existing.username, newUser.username) == 0) {
+                printf("Error: username already exists. Registration cancelled.\n");
+                fclose(checkFp);
+                return;
+            }
+        }
+        fclose(checkFp);
+    }
+
     printf("Password: ");
     scanf("%s", newUser.password);
     printf("Role (A = Admin, S = Staff): ");

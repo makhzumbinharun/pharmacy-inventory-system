@@ -1,7 +1,9 @@
 #include "sales.h"
 #include "inventory.h"
+#include "auth.h"
 #include <stdio.h>
 #include <string.h>
+#include <time.h>
 
 void salesMenu(void) {
     int choice;
@@ -25,6 +27,29 @@ void salesMenu(void) {
             default: printf("\nInvalid choice. Please try again.\n");
         }
     }
+}
+
+/* Generates the next transaction ID by counting existing records in sales.dat. Returns e.g. "TXN001", "TXN002"... */
+void generateTransactionId(char *outId) {
+
+    FILE *fp = fopen(SALES_FILE, "rb");
+    int recordCount = 0;
+
+    if (fp != NULL) {
+        fseek(fp, 0, SEEK_END);
+        long fileSize = ftell(fp);
+        recordCount = fileSize / sizeof(Sale);
+        fclose(fp);
+    }
+
+    sprintf(outId, "TXN%03d", recordCount + 1);
+}
+
+/* Fills outDate with today's date in "Aug-14-2026" format. */
+void getCurrentDate(char *outDate) {
+    time_t now = time(NULL);
+    struct tm *localTime = localtime(&now);
+    strftime(outDate, MAX_DATE, "%b-%d-%Y", localTime);
 }
 
 void sellMedicine(void) {
@@ -55,7 +80,7 @@ void sellMedicine(void) {
         return;
     }
 
-    printf("Medicine: %s | Available Stock: %d | Price: %.2f\n",
+    printf("Medicine: %s | Available Stock: %d | Unit Price: %.2f\n",
            m.name, m.quantity, m.price);
 
     int qtyToSell;
@@ -80,12 +105,17 @@ void sellMedicine(void) {
     fwrite(&m, sizeof(Medicine), 1, fp);
     fclose(fp);
 
-    /* Record the transaction */
+    /* Build the sale record */
     Sale s;
+
+    generateTransactionId(s.transactionId);
     s.medicineId = m.id;
     strcpy(s.medicineName, m.name);
     s.quantitySold = qtyToSell;
-    s.totalPrice = qtyToSell * m.price;
+    s.unitPrice = m.price;
+    s.totalAmount = qtyToSell * m.price;
+    getCurrentDate(s.date);
+    strcpy(s.username, currentUsername);
 
     FILE *salesFp = fopen(SALES_FILE, "ab");
     if (salesFp == NULL) {
@@ -95,8 +125,9 @@ void sellMedicine(void) {
         fclose(salesFp);
     }
 
-    printf("\nSale successful. %d unit(s) of %s sold for %.2f total.\n",
-           qtyToSell, m.name, s.totalPrice);
+    printf("\nSale successful. Transaction ID: %s\n", s.transactionId);
+    printf("%d unit(s) of %s sold for %.2f total. Date: %s\n",
+           qtyToSell, m.name, s.totalAmount, s.date);
 
     if (checkLowStock(m)) {
         printf("Warning: %s is now low on stock (%d remaining).\n",
