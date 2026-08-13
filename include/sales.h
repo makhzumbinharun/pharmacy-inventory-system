@@ -26,4 +26,7 @@ void salesMenu(void);
 /* Sells a medicine: finds it by ID, checks stock is sufficient, reduces quantity in medicines.dat, records the sale in sales.dat, and warns if stock becomes low afterward. */
 void sellMedicine(void);
 
+void generateTransactionId(char *outId);
+void getCurrentDate(char *outDate);
+
 #endif
