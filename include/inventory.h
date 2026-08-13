@@ -4,7 +4,7 @@
 #include "medicine.h"
 
 /* ---------- Constants ---------- */
-#define LOW_STOCK_THRESHOLD 3
+#define LOW_STOCK_THRESHOLD 10
 
 /* ---------- Public Function Prototypes ---------- */
 
