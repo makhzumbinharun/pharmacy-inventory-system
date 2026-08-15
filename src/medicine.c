@@ -72,10 +72,12 @@ void addMedicine(void) {
         fclose(checkFp);
     }
 
-    printf("Name: ");
-    scanf("%s", m.name);
-    printf("Category: ");
-    scanf("%s", m.category);
+    printf("Name (e.g. Finix 20mg): ");
+    scanf(" %50[^\n]", m.name);
+    printf("Generic Name (e.g. Rabeprazole Sodium): ");
+    scanf(" %50[^\n]", m.genericName);
+    printf("Category (e.g. Tablet, Capsule, Syrup): ");
+    scanf(" %30[^\n]", m.category);
     printf("Price: ");
     scanf("%f", &m.price);
     printf("Quantity: ");
@@ -104,13 +106,13 @@ void viewAllMedicines(void) {
     Medicine m;
     int count = 0;
 
-    printf("\n%-5s %-20s %-15s %-10s %-10s\n",
-           "ID", "Name", "Category", "Price", "Qty");
-    printf("----------------------------------------------------------\n");
+    printf("\n%-5s %-18s %-20s %-12s %-10s %-6s\n",
+           "ID", "Name", "Generic Name", "Category", "Price", "Qty");
+    printf("--------------------------------------------------------------------------\n");
 
     while (fread(&m, sizeof(Medicine), 1, fp) == 1) {
-        printf("%-5d %-20s %-15s %-10.2f %-10d\n",
-               m.id, m.name, m.category, m.price, m.quantity);
+        printf("%-5d %-18s %-20s %-12s %-10.2f %-6d\n",
+               m.id, m.name, m.genericName, m.category, m.price, m.quantity);
         count++;
     }
 
@@ -141,9 +143,9 @@ void searchMedicine(void) {
     Medicine m;
     int found = 0;
 
-    printf("\n%-5s %-20s %-15s %-10s %-10s\n",
-           "ID", "Name", "Category", "Price", "Qty");
-    printf("----------------------------------------------------------\n");
+    printf("\n%-5s %-18s %-20s %-12s %-10s %-6s\n",
+           "ID", "Name", "Generic Name", "Category", "Price", "Qty");
+    printf("--------------------------------------------------------------------------\n");
 
     if (choice == 1) {
         int searchId;
@@ -152,24 +154,23 @@ void searchMedicine(void) {
 
         while (fread(&m, sizeof(Medicine), 1, fp) == 1) {
             if (m.id == searchId) {
-                printf("%-5d %-20s %-15s %-10.2f %-10d\n",
-                       m.id, m.name, m.category, m.price, m.quantity);
+                printf("%-5d %-18s %-20s %-12s %-10.2f %-6d\n",
+                       m.id, m.name, m.genericName, m.category, m.price, m.quantity);
                 found = 1;
-                break;   /* IDs are unique, no need to keep searching */
+                break;
             }
         }
 
     } else if (choice == 2) {
         char searchName[MAX_NAME];
         printf("Enter Medicine Name (or part of it): ");
-        scanf("%s", searchName);
+        scanf(" %50[^\n]", searchName);
 
         while (fread(&m, sizeof(Medicine), 1, fp) == 1) {
             if (strstr(m.name, searchName) != NULL) {
-                printf("%-5d %-20s %-15s %-10.2f %-10d\n",
-                       m.id, m.name, m.category, m.price, m.quantity);
+                printf("%-5d %-18s %-20s %-12s %-10.2f %-6d\n",
+                       m.id, m.name, m.genericName, m.category, m.price, m.quantity);
                 found = 1;
-                /* no break - a name search may match multiple records */
             }
         }
 
@@ -186,6 +187,83 @@ void searchMedicine(void) {
     }
 }
 
+/* Lets the user find a medicine by ID or by (partial) name.
+   Used by updateMedicine(), deleteMedicine(), and sellMedicine(). */
+int resolveMedicineId(void) {
+
+    int searchChoice;
+    printf("\nFind medicine by:\n");
+    printf("1. Medicine ID\n");
+    printf("2. Medicine Name\n");
+    printf("Enter your choice: ");
+    scanf("%d", &searchChoice);
+
+    if (searchChoice == 1) {
+        int id;
+        printf("Enter Medicine ID: ");
+        scanf("%d", &id);
+        return id;
+    }
+
+    if (searchChoice != 2) {
+        printf("Invalid choice.\n");
+        return -1;
+    }
+
+    char searchName[MAX_NAME];
+    printf("Enter Medicine Name (or part of it): ");
+    scanf(" %50[^\n]", searchName);
+
+    FILE *fp = fopen(MEDICINES_FILE, "rb");
+    if (fp == NULL) {
+        printf("No medicines found. Please add some first.\n");
+        return -1;
+    }
+
+    Medicine matches[100];
+    int matchCount = 0;
+    Medicine m;
+
+    while (fread(&m, sizeof(Medicine), 1, fp) == 1) {
+        if (strstr(m.name, searchName) != NULL && matchCount < 100) {
+            matches[matchCount] = m;
+            matchCount++;
+        }
+    }
+    fclose(fp);
+
+    if (matchCount == 0) {
+        printf("No medicine found matching \"%s\".\n", searchName);
+        return -1;
+    }
+
+    if (matchCount == 1) {
+        return matches[0].id;
+    }
+
+    /* Multiple matches - show them, ask the user to pick one */
+    printf("\nMultiple medicines matched:\n");
+    printf("%-5s %-18s %-6s\n", "ID", "Name", "Qty");
+    printf("----------------------------------\n");
+    for (int i = 0; i < matchCount; i++) {
+        printf("%-5d %-18s %-6d\n",
+               matches[i].id, matches[i].name, matches[i].quantity);
+    }
+
+    int chosenId;
+    printf("Enter the exact Medicine ID from the list above: ");
+    scanf("%d", &chosenId);
+
+    for (int i = 0; i < matchCount; i++) {
+        if (matches[i].id == chosenId) {
+            return chosenId;
+        }
+    }
+
+    printf("That ID was not in the list. Cancelled.\n");
+    return -1;
+}
+
 void updateMedicine(void) {
 
     if (currentUserRole == 'S') {
@@ -200,15 +278,16 @@ void updateMedicine(void) {
         }
     }
 
+    int searchId = resolveMedicineId();
+    if (searchId == -1) {
+        return;
+    }
+
     FILE *fp = fopen(MEDICINES_FILE, "r+b");
     if (fp == NULL) {
         printf("\nNo medicines found. Please add some first.\n");
         return;
     }
-
-    int searchId;
-    printf("\nEnter Medicine ID to update: ");
-    scanf("%d", &searchId);
 
     Medicine m;
     int found = 0;
@@ -227,32 +306,67 @@ void updateMedicine(void) {
     }
 
     printf("\nCurrent details:\n");
-    printf("Name: %s | Category: %s | Price: %.2f | Quantity: %d\n",
-           m.name, m.category, m.price, m.quantity);
+    printf("ID: %d | Name: %s | Generic: %s | Category: %s | Price: %.2f | Quantity: %d\n",
+           m.id, m.name, m.genericName, m.category, m.price, m.quantity);
 
     int fieldChoice;
     printf("\nWhat do you want to update?\n");
-    printf("1. Name\n");
-    printf("2. Category\n");
-    printf("3. Price\n");
-    printf("4. Quantity\n");
+    printf("1. Medicine ID\n");
+    printf("2. Name\n");
+    printf("3. Generic Name\n");
+    printf("4. Category\n");
+    printf("5. Price\n");
+    printf("6. Quantity\n");
     printf("Enter your choice: ");
     scanf("%d", &fieldChoice);
 
     switch (fieldChoice) {
-        case 1:
-            printf("New name: ");
-            scanf("%s", m.name);
+        case 1: {
+            int newId;
+            printf("New Medicine ID: ");
+            scanf("%d", &newId);
+
+            if (newId == m.id) {
+                /* No actual change, skip the duplicate check */
+                break;
+            }
+
+            /* Check the new ID isn't already used by another medicine.
+               We scan a SEPARATE read-only handle here, since fp is positioned mid-file for the eventual fseek/fwrite below, and we don't want to disturb that position. */
+            FILE *checkFp = fopen(MEDICINES_FILE, "rb");
+            if (checkFp != NULL) {
+                Medicine other;
+                while (fread(&other, sizeof(Medicine), 1, checkFp) == 1) {
+                    if (other.id == newId) {
+                        printf("Error: Medicine ID %d is already in use. Update cancelled.\n", newId);
+                        fclose(checkFp);
+                        fclose(fp);
+                        return;
+                    }
+                }
+                fclose(checkFp);
+            }
+
+            m.id = newId;
             break;
+        }
         case 2:
-            printf("New category: ");
-            scanf("%s", m.category);
+            printf("New name: ");
+            scanf(" %50[^\n]", m.name);
             break;
         case 3:
+            printf("New generic name: ");
+            scanf(" %50[^\n]", m.genericName);
+            break;
+        case 4:
+            printf("New category: ");
+            scanf(" %30[^\n]", m.category);
+            break;
+        case 5:
             printf("New price: ");
             scanf("%f", &m.price);
             break;
-        case 4:
+        case 6:
             printf("New quantity: ");
             scanf("%d", &m.quantity);
             break;
@@ -262,7 +376,6 @@ void updateMedicine(void) {
             return;
     }
 
-    /* Step back to the start of this record before rewriting it */
     fseek(fp, -(long)sizeof(Medicine), SEEK_CUR);
     fwrite(&m, sizeof(Medicine), 1, fp);
 
@@ -284,6 +397,11 @@ void deleteMedicine(void) {
         }
     }
 
+    int searchId = resolveMedicineId();
+    if (searchId == -1) {
+        return;
+    }
+
     FILE *fp = fopen(MEDICINES_FILE, "rb");
     if (fp == NULL) {
         printf("\nNo medicines found. Please add some first.\n");
@@ -297,17 +415,13 @@ void deleteMedicine(void) {
         return;
     }
 
-    int searchId;
-    printf("\nEnter Medicine ID to delete: ");
-    scanf("%d", &searchId);
-
     Medicine m;
     int found = 0;
 
     while (fread(&m, sizeof(Medicine), 1, fp) == 1) {
         if (m.id == searchId) {
             found = 1;
-            continue;   /* skip writing this one - this is the delete */
+            continue;
         }
         fwrite(&m, sizeof(Medicine), 1, tempFp);
     }
@@ -317,7 +431,7 @@ void deleteMedicine(void) {
 
     if (!found) {
         printf("No medicine found with that ID.\n");
-        remove("data/temp.dat");   /* clean up, nothing was actually deleted */
+        remove("data/temp.dat");
         return;
     }
 
