@@ -54,15 +54,16 @@ void getCurrentDate(char *outDate) {
 
 void sellMedicine(void) {
 
+     int searchId = resolveMedicineId();
+    if (searchId == -1) {
+        return;
+    }
+
     FILE *fp = fopen(MEDICINES_FILE, "r+b");
     if (fp == NULL) {
         printf("\nNo medicines found. Please add some first.\n");
         return;
     }
-
-    int searchId;
-    printf("\nEnter Medicine ID to sell: ");
-    scanf("%d", &searchId);
 
     Medicine m;
     int found = 0;
