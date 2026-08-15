@@ -2,6 +2,7 @@
 #define SALES_H
 
 #include "medicine.h"
+#include "auth.h"
 
 /* ---------- Constants ---------- */
 #define SALES_FILE "data/sales.dat"
