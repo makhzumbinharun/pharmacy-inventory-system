@@ -1,3 +1,4 @@
+#include "utils.h"
 #include "inventory.h"
 #include "medicine.h"
 #include "auth.h"
@@ -9,6 +10,7 @@ void medicineMenu(void) {
     int running = 1;
 
     while (running) {
+        clearScreen();
         printf("\n------- MEDICINE MANAGEMENT -------\n");
         printf("1. Add Medicine\n");
         printf("2. View All Medicines\n");
@@ -26,17 +28,20 @@ void medicineMenu(void) {
         }
 
         switch (choice) {
-            case 1: addMedicine(); break;
-            case 2: viewAllMedicines(); break;
-            case 3: searchMedicine(); break;
-            case 4: updateMedicine(); break;
-            case 5: deleteMedicine(); break;
-            case 6: viewLowStockMedicines(); break;
+            case 1: addMedicine(); pauseScreen(); break;
+            case 2: viewAllMedicines(); pauseScreen(); break;
+            case 3: searchMedicine(); pauseScreen(); break;
+            case 4: updateMedicine(); pauseScreen(); break;
+            case 5: deleteMedicine(); pauseScreen(); break;
+            case 6: viewLowStockMedicines(); pauseScreen(); break;
             case 7: running = 0; break;
-            default: printf("\nInvalid choice. Please try again.\n");
+            default:
+                printf("\nInvalid choice. Please try again.\n");
+                pauseScreen();
         }
     }
 }
+
 
 void addMedicine(void) {
 
