@@ -1,3 +1,4 @@
+#include "utils.h"
 #include "sales.h"
 #include "inventory.h"
 #include "auth.h"
@@ -10,6 +11,7 @@ void salesMenu(void) {
     int running = 1;
 
     while (running) {
+        clearScreen();
         printf("\n--------- SALES MANAGEMENT ---------\n");
         printf("1. Sell Medicine\n");
         printf("2. Back to Main Menu\n");
@@ -22,9 +24,11 @@ void salesMenu(void) {
         }
 
         switch (choice) {
-            case 1: sellMedicine(); break;
+            case 1: sellMedicine(); pauseScreen(); break;
             case 2: running = 0; break;
-            default: printf("\nInvalid choice. Please try again.\n");
+            default:
+                printf("\nInvalid choice. Please try again.\n");
+                pauseScreen();
         }
     }
 }

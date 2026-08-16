@@ -2,14 +2,11 @@
 #include "sales.h"
 #include "auth.h"
 #include "medicine.h"
+#include "utils.h"
 #include <stdio.h>
-#include <string.h>
-
-#define SCREEN_WIDTH 80
 
 /* ---------- Function Prototypes ---------- */
 /* Prototypes for main.c's own functions - the actual business logic (auth, medicine, sales, reports) lives in their own modules, included above. */
-void printCentered(const char *text);
 void displayWelcomeScreen();
 int  displayMainMenu();
 void loginMenu();
@@ -17,6 +14,7 @@ void loginMenu();
 int main() {
     initializeAuthFile();
     displayWelcomeScreen();
+    pauseScreen();
 
     int choice;
     int running = 1;
@@ -31,6 +29,7 @@ int main() {
                 break;
 
             case 2:
+                clearScreen();
                 printf("\nThank you for using Pharmacy Inventory Management System.\n");
                 printf("Exiting program...\n");
                 running = 0;
@@ -38,6 +37,7 @@ int main() {
 
             default:
                 printf("\nInvalid choice. Please enter 1 or 2.\n");
+                pauseScreen();
         }
     }
 
@@ -46,23 +46,8 @@ int main() {
 
 /* ---------- Function Definitions ---------- */
 
-/* Prints one line of text centered within an 80-column terminal, padding with leading spaces. */
-void printCentered(const char *text) {
-    int len = strlen(text);
-    int padding = (SCREEN_WIDTH - len) / 2;
-
-    if (padding < 0) {
-        padding = 0;
-    }
-
-    for (int i = 0; i < padding; i++) {
-        putchar(' ');
-    }
-
-    printf("%s\n", text);
-}
-
 void displayWelcomeScreen() {
+    clearScreen();
     printCentered("=========================================");
     printCentered("PHARMACY INVENTORY MANAGEMENT SYSTEM");
     printCentered("=========================================");
@@ -73,6 +58,7 @@ void displayWelcomeScreen() {
 int displayMainMenu() {
     int choice;
 
+    clearScreen();
     printf("\n----------- MAIN MENU -----------\n");
     printf("1. Login\n");
     printf("2. Exit\n");
@@ -80,8 +66,6 @@ int displayMainMenu() {
     printf("Enter your choice: ");
 
     if (scanf("%d", &choice) != 1) {
-        /* User typed something that is not a number.
-           We must clear it out of the input buffer; otherwise, the program will loop forever. */
         while (getchar() != '\n');
         return -1;
     }
@@ -103,11 +87,13 @@ void loginMenu() {
 
     if (result == 1 || result == 2) {
         printf("\nLogin successful. Welcome, %s.\n", result == 1 ? "Admin" : "Staff");
+        pauseScreen();
 
         int hubChoice;
         int hubRunning = 1;
 
         while (hubRunning) {
+            clearScreen();
             printf("\n----------- DASHBOARD -----------\n");
             printf("1. Medicine Management\n");
             printf("2. Sales Management\n");
@@ -134,13 +120,17 @@ void loginMenu() {
                     } else {
                         printf("\nInvalid choice. Please try again.\n");
                     }
+                    pauseScreen();
                     break;
                 case 5: hubRunning = 0; break;
-                default: printf("\nInvalid choice. Please try again.\n");
+                default:
+                    printf("\nInvalid choice. Please try again.\n");
+                    pauseScreen();
             }
         }
 
     } else {
         printf("\nLogin failed. Invalid username or password.\n");
+        pauseScreen();
     }
 }
