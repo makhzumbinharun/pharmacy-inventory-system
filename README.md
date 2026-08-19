@@ -8,6 +8,7 @@ Built as a Software Development Project (SDP) at **Bangladesh University of Busi
 
 
 > **🚧 Project Status:** Proposal approved. Development starting — currently on Increment 3 (Inventory & Sales). The folder structure below is the planned architecture; source code is being added gradually.
+> > ✅ **Project Status:** All planned features complete — Login System, Medicine Management, Inventory Management, Sales Management, and Reports are fully implemented and tested. Selected to represent the class at the Software Development Idea Pitching & Project Showcasing, BUBT (18 August 2026).
 
 ## 👥 Team — Three Knights
 
