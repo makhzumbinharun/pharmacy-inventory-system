@@ -10,13 +10,14 @@ Built as a Software Development Project (SDP) at **Bangladesh University of Busi
 
 ## 👥 Team — Three Knights
 
-| Student ID  | Name                | Role                          |
-| ----------- | ------------------- | ------------------------------ |
-| 20254103279 | Makhzum Bin Harun   | Team Leader & Core Programmer |
-| 20254103269 | Md. Rafiul Islam    | Core Programmer & SQA         |
-| 20254103272 | Estiak Ahmed Turnab | Core Programmer               |
+| Student ID  | Name                | Role                          | Key Responsibilities
+| ----------- | ------------------- | ------------------------------ | ------------------------------ | 
+| 20254103279 | [Makhzum-Bin-Harun](makhzumbinharun.github.io)   | Team Leader & Core Programmer | Team coordination, system architecture design, Login module implementation, module integration and documentation | 
+| 20254103269 | [MD. Rafiul Islam](www.linkedin.com/in/therafiulislam)    | Core Programmer & SQA         | Medicine Management module, file handling design, unit testing, test case documentation, bug tracking | 
+| 20254103272 | Estiak Ahmed Turnab | Core Programmer               | Sales module, Inventory and stock tracking module, Reports module | 
 
-**Supervised by:** [Mastura Sadaf](https://www.linkedin.com/in/mastura-sadaf-742588137), Lecturer, Dept. of CSE, BUBT
+
+**Supervised by:** [Mastura Sadaf](www.linkedin.com/in/mastura-sadaf-742588137), Lecturer, Dept. of CSE, BUBT
 
 ---
 
@@ -56,17 +57,22 @@ This system helps small pharmacies manage their daily operations through a role-
 
 ## 📸 Screenshots
 
-**Welcome Screen**
-![Welcome Screen](docs/screenshots/welcome.png)
+| Sign Up | Welcome Screen |Admin Login |
+|---|---|---|
+| ![Sign Up [If no admin user created]](docs/screenshots/sign_up.png) | ![Welcome Screen](docs/screenshots/welcome_screen.png) | ![Admin Login ](docs/screenshots/admin_login.png) |
 
-**Dashboard**
-![Dashboard](docs/screenshots/dashboard.png)
+| Admin Dashboard |  Add Medicine (Admin) | Sell Medicine 
+|---|---|---|
+| ![Admin Dashboard](docs/screenshots/admin_dashboard.png) | ![Add Medicine (Admin)](docs/screenshots/add_medicine_admin.png) | ![Sell Medicine (Admin)](docs/screenshots/sell_medicine_admin.png) |
 
-**Medicine Management**
-![View All Medicines](docs/screenshots/view-medicines.png)
+| Inventory Report |  Sales Report | Register New User 
+|---|---|---|
+| ![Inventory Report](docs/screenshots/admin_dashboard.png) | ![Sales Report](docs/screenshots/add_medicine_admin.png) | ![Register New User](docs/screenshots/sell_medicine_admin.png) |
 
-**Sales Report**
-![Sales Report](docs/screenshots/sales-report.png)
+| Staff Dashboard |  Add Medicine (Staff, Admin password prompt)  | Sell Medicine 
+|---|---|---|
+| ![Staff Dashboard](docs/screenshots/staff_dashboard.png) | ![Add Medicine (Staff, Admin password prompt) ](docs/screenshots/add_medicine_staff.png) | ![Sell Medicine](docs/screenshots/sell_medicine_staff.png) |
+
 
 ---
 
