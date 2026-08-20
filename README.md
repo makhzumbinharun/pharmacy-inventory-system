@@ -65,13 +65,20 @@ This system helps small pharmacies manage their daily operations through a role-
 |---|---|---|
 | ![Admin Dashboard](docs/screenshots/admin_dashboard.png) | ![Add Medicine (Admin)](docs/screenshots/add_medicine_admin.png) | ![Sell Medicine (Admin)](docs/screenshots/sell_medicine_admin.png) |
 
+| Medicine Management |
+|---|
+| ![Medicine Management](docs/screenshots/medicine_management_admin.png) |
+
 | Inventory Report |  Sales Report | Register New User 
 |---|---|---|
-| ![Inventory Report](docs/screenshots/admin_dashboard.png) | ![Sales Report](docs/screenshots/add_medicine_admin.png) | ![Register New User](docs/screenshots/sell_medicine_admin.png) |
+| ![Inventory Report](docs/screenshots/inventory_report.png) | ![Sales Report](docs/screenshots/sales_report.png) | ![Register New User](docs/screenshots/register_new_user.png) |
 
 | Staff Dashboard |  Add Medicine (Staff, Admin password prompt)  | Sell Medicine 
 |---|---|---|
 | ![Staff Dashboard](docs/screenshots/staff_dashboard.png) | ![Add Medicine (Staff, Admin password prompt) ](docs/screenshots/add_medicine_staff.png) | ![Sell Medicine](docs/screenshots/sell_medicine_staff.png) |
+
+
+
 
 
 ---
